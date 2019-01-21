@@ -1,0 +1,44 @@
+{
+    "name": "mwcbrent/mobilize",
+    "description": "Mobilize America API Integration for Events",
+    "type": "craft-plugin",
+    "version": "1",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "mobilize"
+    ],
+    "support": {
+        "docs": "https://github.com/mwcbrent/mobilize/blob/master/README.md",
+        "issues": "https://github.com/mwcbrent/mobilize/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Brent Sanders",
+            "homepage": "http://www.github.com/mwcbrent"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0-RC1",
+        "guzzlehttp/guzzle": "~6.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "mwcbrent\\mobilize\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Mobilize",
+        "handle": "mobilize",
+        "hasCpSettings": true,
+        "hasCpSection": false,
+        "changelogUrl": "https://raw.githubusercontent.com/mwcbrent/mobilize/master/CHANGELOG.md",
+        "components": {
+            "mobilizeService": "mwcbrent\\mobilize\\services\\MobilizeService"
+        },
+        "class": "mwcbrent\\mobilize\\Mobilize"
+    }
+}

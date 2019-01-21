@@ -1,0 +1,50 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Mobilize plugin for Craft CMS 3.x
+ *
+ * Mobilize Settings.twig
+ *
+ * @author    Brent Sanders
+ * @copyright Copyright (c) 2019 Brent Sanders
+ * @link      http://www.github.com/mwcbrent
+ * @package   Mobilize
+ * @since     1
+ */
+#}
+
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("mwcbrent\\mobilize\\assetbundles\\Mobilize\\MobilizeAsset") %}
+
+{{forms.textField({
+    label: 'API Key',
+    required: true,
+    instructions: 'Enter you API Key',
+    name: 'apiKey',
+    value: settings.apiKey,
+    errors: settings.getErrors('apiKey')
+  })
+}}
+
+{{forms.textField({
+    label: 'Cache Duration',
+    required: true,
+    instructions: 'Set the time in seconds to cache the data from the MobilizeAmerica API.',
+    placeholder: '3600',
+    name: 'cacheDuration',
+    value: settings.cacheDuration,
+    errors: settings.getErrors('cacheDuration')
+  })
+}}
+
+{{forms.textField({
+    label: 'Organization ID',
+    required: true,
+    instructions: 'Set your Organization ID to retrieve events scoped to your organization.',
+    placeholder: '',
+    name: 'organizationID',
+    value: settings.organizationID,
+    errors: settings.getErrors('organizationID')
+  })
+}}
