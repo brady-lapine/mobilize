@@ -57,9 +57,10 @@ class MobilizeService extends Component
     {
         $query = [
             'organization_id' => $this->organizationID,
-            'per_page' => $limit
+            'per_page' => $limit,
+            'timeslot_start' => 'gte_' . time()
         ];
-        $events = Craft::$app->cache->get('mobilize-allEvents-' . $limit);
+        $events = false;//Craft::$app->cache->get('mobilize-allEvents-' . $limit);
         if (!$events) {
             $response = $this->client->request('GET', 'events', [
                 'query' => $query,
