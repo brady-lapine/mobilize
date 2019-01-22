@@ -31,8 +31,8 @@ class MobilizeVariable
     // Public Methods
     // =========================================================================
 
-     public function allEvents()
+     public function allEvents($params)
      {
-         return Mobilize::$plugin->mobilizeService->allEvents();
+         return Mobilize::$plugin->mobilizeService->eventList($params);
      }
 }

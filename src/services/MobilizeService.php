@@ -30,19 +30,7 @@ use craft\base\Component;
  */
 class MobilizeService extends Component
 {
-    // Public Methods
-    // =========================================================================
 
-    /**
-     * This function can literally be anything you want, and you can have as many service
-     * functions as you want
-     *
-     * From any other plugin file, call it like this:
-     *
-     *     Mobilize::$plugin->mobilizeService->allEvents()
-     *
-     * @return mixed
-     */
     protected $apiKey;
     protected $cacheDuration;
     protected $organizationID;
@@ -60,20 +48,30 @@ class MobilizeService extends Component
         $this->apiKey = $settings->apiKey;
         $this->organizationID = $settings->organizationID;
         $this->client = new Client([
-            // Base URI is used with relative requests
             'base_uri' => 'https://events.mobilizeamerica.io/api/v1/',
-            // You can set any number of default request options.
             'timeout'  => 20.0,
         ]);
     }
 
-    public function allEvents()
+    public function eventList($limit=25)
     {
-        $response = $this->client->request('GET', 'events?organization_id=' . $this->organizationID);
-        if ($response->getStatusCode() != 200) {
-            throw new Exception("Error: " . $response->getMessage());
+        $query = [
+            'organization_id' => $this->organizationID,
+            'per_page' => $limit
+        ];
+        $events = Craft::$app->cache->get('mobilize-allEvents-' . $limit);
+        if (!$events) {
+            $response = $this->client->request('GET', 'events', [
+                'query' => $query,
+            ]);
+            if ($response->getStatusCode() != 200) {
+                throw new Exception("Error: " . $response->getMessage());
+            }
+            $event_json = json_decode($response->getBody()->getContents());
+            $events = $event_json->data;
+            Craft::$app->cache->set('mobilize-allEvents-' . $limit, $events, 3600);
         }
-        $events = json_decode($response->getBody()->getContents());
-        return $events->data;
+
+        return $events;
     }
 }
