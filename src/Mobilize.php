@@ -19,6 +19,8 @@ use craft\base\Plugin;
 use craft\services\Plugins;
 use craft\events\PluginEvent;
 use craft\web\twig\variables\CraftVariable;
+use craft\web\UrlManager;
+use craft\events\RegisterUrlRulesEvent;
 
 use yii\base\Event;
 
@@ -81,6 +83,14 @@ class Mobilize extends Plugin
     {
         parent::init();
         self::$plugin = $this;
+
+        Event::on(
+            UrlManager::class,
+            UrlManager::EVENT_REGISTER_SITE_URL_RULES,
+            function (RegisterUrlRulesEvent $event) {
+                $event->rules['mobilize'] = 'mobilize/mobilize/index';
+            }
+        );
 
         // Register our variables
         Event::on(
