@@ -53,24 +53,43 @@ class MobilizeService extends Component
         ]);
     }
 
-    public function eventList($limit=25)
+    public function eventList($options)
     {
-        $query = [
+        $args = [
             'organization_id' => $this->organizationID,
-            'per_page' => $limit,
-            'timeslot_start' => 'gte_' . time()
         ];
-        $events = false;//Craft::$app->cache->get('mobilize-allEvents-' . $limit);
+        if (array_key_exists('limit', $options)) {
+            $args['per_page'] = $options['limit'];
+        } else {
+            $args['per_page'] = 4;
+        }
+
+        if (array_key_exists('startDate', $options)) {
+            $args['timeslot_start'] = 'gte_' . strtotime($options['startDate']);
+        } else {
+            $args['timeslot_start'] = 'gte_' . time();
+        }
+
+        if (array_key_exists('endDate', $options)) {
+            $args['timeslot_end'] = 'lte_' . strtotime($options['endDate']);
+        }
+
+        if (array_key_exists('zipcode', $options)) {
+            $args['zipcode'] = $options['zipcode'];
+        }
+
+        $cacheKey = 'mobilize-allEvents-' . implode('-', $args);
+        $events = Craft::$app->cache->get($cacheKey);
         if (!$events) {
             $response = $this->client->request('GET', 'events', [
-                'query' => $query,
+                'query' => $args,
             ]);
             if ($response->getStatusCode() != 200) {
                 throw new Exception("Error: " . $response->getMessage());
             }
             $event_json = json_decode($response->getBody()->getContents());
             $events = $event_json->data;
-            Craft::$app->cache->set('mobilize-allEvents-' . $limit, $events, 3600);
+            Craft::$app->cache->set($cacheKey, $events, 3600);
         }
 
         return $events;

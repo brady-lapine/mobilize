@@ -35,4 +35,5 @@ class MobilizeVariable
      {
          return Mobilize::$plugin->mobilizeService->eventList($params);
      }
+
 }
