@@ -9,6 +9,7 @@
  */
 
 namespace mwcbrent\mobilize\services;
+
 use GuzzleHttp\Client;
 use mwcbrent\mobilize\Mobilize;
 
@@ -39,15 +40,15 @@ class MobilizeService extends Component
     public function __construct()
     {
         $settings = Mobilize::$plugin->getSettings();
-        if (!$settings->apiKey) {
+        if ( ! $settings->apiKey) {
             throw new Exception("You must add a Mobilize America API Key");
         }
-        if (!$settings->organizationID) {
+        if ( ! $settings->organizationID) {
             throw new Exception("You must add a Mobilize America Organization ID");
         }
-        $this->apiKey = $settings->apiKey;
+        $this->apiKey         = $settings->apiKey;
         $this->organizationID = $settings->organizationID;
-        $this->client = new Client([
+        $this->client         = new Client([
             'base_uri' => 'https://events.mobilizeamerica.io/api/v1/',
             'timeout'  => 20.0,
         ]);
@@ -57,6 +58,7 @@ class MobilizeService extends Component
     {
         $args = [
             'organization_id' => $this->organizationID,
+            'timeslot_start'  => 'gte_' . time()
         ];
         if (array_key_exists('limit', $options)) {
             $args['per_page'] = $options['limit'];
@@ -64,13 +66,11 @@ class MobilizeService extends Component
             $args['per_page'] = 4;
         }
 
-        if (array_key_exists('startDate', $options)) {
+        if ($options['startDate'] !== null and $options['startDate'] !== "") {
             $args['timeslot_start'] = 'gte_' . strtotime($options['startDate']);
-        } else {
-            $args['timeslot_start'] = 'gte_' . time();
         }
 
-        if (array_key_exists('endDate', $options)) {
+        if ($options['endDate'] !== null and $options['endDate'] !== "") {
             $args['timeslot_end'] = 'lte_' . strtotime($options['endDate']);
         }
 
@@ -79,8 +79,8 @@ class MobilizeService extends Component
         }
 
         $cacheKey = 'mobilize-allEvents-' . implode('-', $args);
-        $events = Craft::$app->cache->get($cacheKey);
-        if (!$events) {
+        $events   = Craft::$app->cache->get($cacheKey);
+        if ( ! $events) {
             $response = $this->client->request('GET', 'events', [
                 'query' => $args,
             ]);
@@ -88,7 +88,7 @@ class MobilizeService extends Component
                 throw new Exception("Error: " . $response->getMessage());
             }
             $event_json = json_decode($response->getBody()->getContents());
-            $events = $event_json->data;
+            $events     = $event_json->data;
             Craft::$app->cache->set($cacheKey, $events, 3600);
         }
 
